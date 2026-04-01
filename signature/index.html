@@ -1,71 +1,385 @@
 <!DOCTYPE html>
-<html lang="ko"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<html lang="ko">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>파업.com | 메일 서명 만들기</title>
 <style>
-*{box-sizing:border-box} body{margin:0;font-family:"Malgun Gothic",Arial,sans-serif;background:#0f0f0f;color:#f3f3f3}
-.wrap{display:grid;grid-template-columns:470px 1fr;min-height:100vh} .panel{padding:20px;border-right:1px solid #262626;background:#151515;overflow:auto} .preview{padding:24px;background:#0c0c0c;overflow:auto}
-h1{margin:0;font-size:28px;font-weight:800} .group{margin-bottom:16px;padding:14px;border:1px solid #2a2a2a;border-radius:12px;background:#1a1a1a}
-.group h2{margin:0 0 12px;font-size:15px} label{display:block;margin:10px 0 6px;font-size:13px;color:#d7d7d7}
+*{box-sizing:border-box}
+body{margin:0;font-family:"Malgun Gothic",Arial,sans-serif;background:#0f0f0f;color:#f3f3f3}
+.wrap{display:grid;grid-template-columns:470px 1fr;min-height:100vh}
+.panel{padding:20px;border-right:1px solid #262626;background:#151515;overflow:auto}
+.preview{padding:24px;background:#0c0c0c;overflow:auto}
+h1{margin:0;font-size:28px;font-weight:800}
+.group{margin-bottom:16px;padding:14px;border:1px solid #2a2a2a;border-radius:12px;background:#1a1a1a}
+.group h2{margin:0 0 12px;font-size:15px}
+label{display:block;margin:10px 0 6px;font-size:13px;color:#d7d7d7}
 input,textarea{width:100%;border:1px solid #393939;background:#101010;color:#fff;border-radius:10px;padding:10px 12px;font-size:14px}
-textarea{min-height:180px;resize:vertical;line-height:1.5} .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+textarea{min-height:180px;resize:vertical;line-height:1.5}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 button,.btn-link{border:0;border-radius:10px;padding:11px 14px;font-size:14px;cursor:pointer;color:#fff;background:#b30000;margin-right:8px;margin-top:8px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center}
-button.secondary,.btn-link.secondary{background:#333} button.dark,.btn-link.dark{background:#202020;border:1px solid #444}
+button.secondary,.btn-link.secondary{background:#333}
+button.dark,.btn-link.dark{background:#202020;border:1px solid #444}
 .canvasWrap{background:#151515;border:1px solid #242424;border-radius:16px;padding:16px;display:inline-block;width:100%}
 canvas{max-width:100%;height:auto;border-radius:8px;background:#000;box-shadow:0 8px 30px rgba(0,0,0,.35);display:block}
-.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px} .titlebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;gap:12px}
+.titlebar{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .badge{font-size:12px;color:#ffcf87;background:rgba(179,0,0,.12);border:1px solid rgba(255,190,110,.18);padding:6px 10px;border-radius:999px;white-space:nowrap}
-.muted{margin-top:10px;color:#b1b1b1;font-size:12px;line-height:1.5} .previewActions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
-@media (max-width:1160px){.wrap{grid-template-columns:1fr} .panel{border-right:0;border-bottom:1px solid #262626}}
-</style></head><body>
-<div class="wrap"><div class="panel">
-<div class="topbar"><div class="titlebar"><h1>메일 서명 만들기</h1><div class="badge">파업.com</div></div><div><button type="button" class="secondary" onclick="window.open('./guide.html','_blank')">설명서</button></div></div>
-<div class="group"><h2>서명 원문</h2><textarea id="sourceText" placeholder="회사 메일 서명 또는 회사 정보 화면 내용을 그대로 붙여넣으세요."></textarea><button type="button" class="secondary" onclick="extractFields()">자동 추출</button></div>
-<div class="group"><h2>정보</h2>
-<div class="row"><div><label for="name">이름</label><input id="name" value=""></div><div><label for="phone">휴대폰</label><input id="phone" value=""></div></div>
-<label for="work">담당업무</label><input id="work" value="">
-<div class="row"><div><label for="dept">부서/조직</label><input id="dept" value=""></div><div><label for="position">직급/직책</label><input id="position" value=""></div></div>
-<div class="row"><div><label for="companyPhone">회사전화</label><input id="companyPhone" value=""></div><div><label for="fax">팩스</label><input id="fax" value=""></div></div>
-<div class="row"><div><label for="email">이메일</label><input id="email" value=""></div><div><label for="homepage">회사홈페이지</label><input id="homepage" value=""></div></div>
-<label for="company">회사명</label><input id="company" value=""></div>
-<div class="group"><h2>출력</h2>
-<div class="row"><div><label for="widthInput">가로(px)</label><input id="widthInput" type="number" value="400" min="300" max="5000"></div><div><label for="heightInput">세로(px)</label><input id="heightInput" type="number" value="140" min="100" max="5000"></div></div>
-<button type="button" onclick="renderSignature()">미리보기 갱신</button><a id="downloadBtn" class="btn-link secondary" href="#" download="signature_user.png">PNG 저장</a><button type="button" class="dark" onclick="copyImage()">이미지 복사</button>
-<div class="muted">서버에서 먼저 /signature/ 만 올려 테스트하세요. 메인 index.html은 나중에 바꾸면 됩니다.</div></div>
+.muted{margin-top:10px;color:#b1b1b1;font-size:12px;line-height:1.5}
+.previewActions{margin-top:12px;display:flex;gap:10px;flex-wrap:wrap}
+@media (max-width:1160px){.wrap{grid-template-columns:1fr}.panel{border-right:0;border-bottom:1px solid #262626}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="panel">
+    <div class="topbar">
+      <div class="titlebar">
+        <h1>메일 서명 만들기</h1>
+        <div class="badge">파업.com</div>
+      </div>
+      <div><button type="button" class="secondary" onclick="window.open('./guide.html','_blank')">설명서</button></div>
+    </div>
+
+    <div class="group">
+      <h2>서명 원문</h2>
+      <textarea id="sourceText" placeholder="회사 메일 서명 또는 회사 정보 화면 내용을 그대로 붙여넣으세요."></textarea>
+      <button type="button" class="secondary" onclick="extractFields()">자동 추출</button>
+    </div>
+
+    <div class="group">
+      <h2>정보</h2>
+      <div class="row">
+        <div><label for="name">이름</label><input id="name" value="" /></div>
+        <div><label for="phone">휴대폰</label><input id="phone" value="" /></div>
+      </div>
+      <label for="work">담당업무</label><input id="work" value="" />
+      <div class="row">
+        <div><label for="dept">부서/조직</label><input id="dept" value="" /></div>
+        <div><label for="position">직급/직책</label><input id="position" value="" /></div>
+      </div>
+      <div class="row">
+        <div><label for="companyPhone">회사전화</label><input id="companyPhone" value="" /></div>
+        <div><label for="fax">팩스</label><input id="fax" value="" /></div>
+      </div>
+      <div class="row">
+        <div><label for="email">이메일</label><input id="email" value="" /></div>
+        <div><label for="homepage">회사홈페이지</label><input id="homepage" value="" /></div>
+      </div>
+      <label for="company">회사명</label><input id="company" value="" />
+    </div>
+
+    <div class="group">
+      <h2>출력</h2>
+      <div class="row">
+        <div><label for="widthInput">가로(px)</label><input id="widthInput" type="number" value="400" min="300" max="5000" /></div>
+        <div><label for="heightInput">세로(px)</label><input id="heightInput" type="number" value="140" min="100" max="5000" /></div>
+      </div>
+      <button type="button" onclick="renderSignature()">미리보기 갱신</button>
+      <a id="downloadBtn" class="btn-link secondary" href="#" download="signature_user.png">PNG 저장</a>
+      <button type="button" class="dark" onclick="copyImage()">이미지 복사</button>
+      <div class="muted">글자 크기는 고정입니다. 긴 이름/업무가 겹치지 않도록 줄 간격을 보정했습니다. /signature/ 만 먼저 올려 테스트한 뒤 메인 index.html을 바꾸세요.</div>
+    </div>
+  </div>
+
+  <div class="preview">
+    <div class="canvasWrap">
+      <canvas id="sigCanvas" width="400" height="140"></canvas>
+      <div class="previewActions">
+        <button type="button" class="secondary" onclick="openImageInNewTab()">이미지 새 탭 열기</button>
+      </div>
+    </div>
+  </div>
 </div>
-<div class="preview"><div class="canvasWrap"><canvas id="sigCanvas" width="400" height="140"></canvas>
-<div class="previewActions"><button type="button" class="secondary" onclick="openImageInNewTab()">이미지 새 탭 열기</button></div>
-</div></div></div>
+
 <script>
-const FIXED_LINES=["상한폐지 실현하자","투명하게 바꾸자","제도화 하자"];
-const bgImg=new Image(); bgImg.src="";
-function $(id){return document.getElementById(id);}
-function normalizeText(text){return (text||"").replace(/\r/g,"").replace(/\u00A0/g," ").replace(/[ \t]+/g," ");}
-function normalizeLines(text){return normalizeText(text).replace(/M\.\s*(\+?82[0-9.\- ]+)/g,"\nM. $1\n").replace(/F\.\s*(\+?82[0-9.\- ]+)/g,"\nF. $1\n").split(/\n+/).map(v=>v.trim()).filter(Boolean);}
-function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){if(!text)return 0; const words=text.split(/\s+/); let line=""; const lines=[]; for(let i=0;i<words.length;i++){const testLine=line?line+" "+words[i]:words[i]; if(ctx.measureText(testLine).width>maxWidth&&line){lines.push(line); line=words[i]; if(maxLines&&lines.length>=maxLines)break;} else {line=testLine;}} if(line&&(!maxLines||lines.length<maxLines)) lines.push(line); lines.forEach((ln,idx)=>ctx.fillText(ln,x,y+idx*lineHeight)); return lines.length;}
-function roundRect(ctx,x,y,width,height,radius,fill){ctx.beginPath(); ctx.moveTo(x+radius,y); ctx.lineTo(x+width-radius,y); ctx.quadraticCurveTo(x+width,y,x+width,y+radius); ctx.lineTo(x+width,y+height-radius); ctx.quadraticCurveTo(x+width,y+height,x+width-radius,y+height); ctx.lineTo(x+radius,y+height); ctx.quadraticCurveTo(x,y+height,x,y+height-radius); ctx.lineTo(x,y+radius); ctx.quadraticCurveTo(x,y,x+radius,y); ctx.closePath(); if(fill)ctx.fill();}
-function cleanValue(v){return (v||"").trim().replace(/^[:：]\s*/,"");}
-function getFieldBlock(raw,label){const lines=raw.split(/\n/); let start=-1; for(let i=0;i<lines.length;i++){if(lines[i].includes(label)){start=i;break;}} if(start===-1)return ""; const collected=[]; for(let i=start;i<lines.length;i++){const line=lines[i].trim(); if(i===start){const after=line.replace(new RegExp("^.*?"+label+"\\s*[:：]?\\s*"),"").trim(); if(after)collected.push(after); continue;} if(!line)break; if(/^(회사주소|세부위치|연락처|이메일|회사전화 ?1|회사전화|휴대폰 ?1|휴대폰|인터넷전화|팩스|회사홈페이지|비밀번호 찾기 인증 연락처|외부메일|공유정보|담당업무|선호언어|영문정보|이름|중간이름|성|표현이름|회사|부서|직급명)$/i.test(line))break; collected.push(line);} return cleanValue(collected.join(" "));}
-function findLabeledValue(raw,label){const block=getFieldBlock(raw,label); if(block)return block; const re=new RegExp(label+"\\s*[:：]?\\s*(.+)","i"); const m=raw.match(re); return m?cleanValue(m[1].split("\n")[0]):"";}
-function extractFirstPhone(raw,labels){for(const label of labels){const value=findLabeledValue(raw,label); if(value)return value;} return "";}
-function normalizePhone(v){let s=(v||"").trim(); if(!s)return ""; s=s.replace(/\s+/g,""); s=s.replace(/-/g,"."); s=s.replace(/\.\./g,"."); return s;}
-function extractWorkFromSignature(lines){const filtered=lines.filter(v=>!/노동조합|노조|지부|위원장|국장/.test(v)); const explicit=filtered.find(v=>/【.*】/.test(v)||/\[Tech\]|\[Task\]|HPC|Public Cloud|인프라 설계|설계 및 운영|운영\(/i.test(v)); if(explicit)return explicit.replace(/,$/,"").trim(); const chunks=[]; for(let i=0;i<lines.length;i++){const line=lines[i]; if(/【/.test(line)||/\[Tech\]|\[Task\]/i.test(line)){chunks.push(line); let j=i+1; while(j<lines.length){const next=lines[j]; if(!next)break; if(/노동조합|노조|지부|위원장|국장|그룹|센터|본부|팀|삼성전자|@/i.test(next))break; chunks.push(next); j++;} break;}} return chunks.join(" ").replace(/\s+,/g,",").trim();}
-function extractFields(){const raw=$("sourceText").value||""; const text=normalizeText(raw); const lines=normalizeLines(raw); const email=findLabeledValue(text,"이메일")||(text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0]||""; const companyPhone=extractFirstPhone(text,["회사전화 1","회사전화","인터넷전화"]); const fax=findLabeledValue(text,"팩스"); const homepage=findLabeledValue(text,"회사홈페이지"); const work=getFieldBlock(raw,"담당업무")||extractWorkFromSignature(lines); const dept=findLabeledValue(text,"부서")||lines.find(v=>/그룹|센터|본부|팀|실\)|실$|파트|담당/i.test(v)&&!/노동조합|노조|지부|위원장|국장/.test(v))||""; const position=findLabeledValue(text,"직급명")||findLabeledValue(text,"직책")||""; const company=findLabeledValue(text,"회사")||lines.find(v=>/^삼성전자$|Samsung Electronics|삼성전자협력사|전자파트너/i.test(v))||""; const name=lines.find(v=>/^[가-힣]{2,5}$/.test(v))||findLabeledValue(text,"이름")||""; let mobile=extractFirstPhone(text,["휴대폰 1","휴대폰"]); if(!mobile){const phoneMatches=text.match(/(\+?82[.\- ]?)?0?1[016789][0-9.\- ]{7,}/g)||[]; if(phoneMatches.length)mobile=phoneMatches[0];} $("name").value=cleanValue(name); $("phone").value=normalizePhone(mobile); $("work").value=cleanValue(work); $("dept").value=cleanValue(dept); $("position").value=cleanValue(position); $("companyPhone").value=normalizePhone(companyPhone); $("fax").value=normalizePhone(fax); $("email").value=cleanValue(email); $("homepage").value=cleanValue(homepage||"www.samsung.com"); $("company").value=cleanValue(company); renderSignature();}
-let latestDataUrl="";
-function updateDownloadLink(){const link=$("downloadBtn"); const fileName="signature_"+(($("name").value||"user").replace(/[^a-zA-Z0-9_-]/g,"_")||"user")+".png"; link.href=latestDataUrl; link.download=fileName;}
-function dataURLToBlob(dataURL){const parts=dataURL.split(","); const mime=parts[0].match(/:(.*?);/)[1]; const binary=atob(parts[1]); const len=binary.length; const bytes=new Uint8Array(len); for(let i=0;i<len;i++)bytes[i]=binary.charCodeAt(i); return new Blob([bytes],{type:mime});}
-function openImageInNewTab(){if(!latestDataUrl)updateFromCanvas(); const w=window.open(); if(!w){alert("새 탭 열기가 차단되었습니다. 브라우저 팝업 차단을 확인하세요."); return;} w.document.write('<title>Signature PNG</title><img src="'+latestDataUrl+'" style="max-width:100%;height:auto;display:block;margin:0 auto;background:#111;">'); w.document.close();}
-function copyRichImageFallback(){const box=document.createElement("div"); box.contentEditable="true"; box.style.position="fixed"; box.style.left="-9999px"; box.style.top="0"; box.innerHTML='<img src="'+latestDataUrl+'" alt="signature" />'; document.body.appendChild(box); const range=document.createRange(); range.selectNodeContents(box); const sel=window.getSelection(); sel.removeAllRanges(); sel.addRange(range); box.focus(); let ok=false; try{ok=document.execCommand("copy");} catch(e){ok=false;} sel.removeAllRanges(); document.body.removeChild(box); return ok;}
-function updateFromCanvas(){const canvas=$("sigCanvas"); latestDataUrl=canvas.toDataURL("image/png"); updateDownloadLink();}
-function renderSignature(){const canvas=$("sigCanvas"); const ctx=canvas.getContext("2d"); const w=parseInt($("widthInput").value||400,10); const h=parseInt($("heightInput").value||140,10); canvas.width=w; canvas.height=h;
-const scale=Math.max(0.85,Math.min(w/400,h/140)); const nameSize=Math.round(18*scale); const labelSize=Math.round(10*scale); const rightSize=Math.round(15*scale); const lineHeight=Math.round(12*scale); const rightLineGap=Math.round(30*scale); const left=Math.round(12*scale); const top=Math.round(10*scale); const rightX=Math.round(w*0.52); const leftWidth=Math.max(140,Math.round(w*0.40));
-const name=$("name").value.trim(), phone=$("phone").value.trim(), work=$("work").value.trim(), dept=$("dept").value.trim(), position=$("position").value.trim(), companyPhone=$("companyPhone").value.trim(), fax=$("fax").value.trim(), company=$("company").value.trim(), email=$("email").value.trim(), homepage=$("homepage").value.trim();
-ctx.clearRect(0,0,w,h); ctx.fillStyle="#000000"; ctx.fillRect(0,0,w,h);
-ctx.fillStyle="#ffb64f"; ctx.fillRect(left,top,Math.max(4,Math.round(4*scale)),h-Math.round(20*scale)); ctx.fillStyle="#ffffff"; ctx.font="bold "+nameSize+"px Malgun Gothic, Arial, sans-serif"; ctx.fillText(name||"",left+Math.round(10*scale),top+nameSize);
-let y=top+nameSize+Math.round(8*scale); if(position){ctx.fillStyle="#ffd59d"; ctx.font="bold "+Math.max(10,Math.round(9*scale))+"px Malgun Gothic, Arial, sans-serif"; ctx.fillText(position,left+Math.round(10*scale),y); y+=Math.round(12*scale);}
-ctx.fillStyle="#f0f0f0"; ctx.font=labelSize+"px Malgun Gothic, Arial, sans-serif"; const leftLines=[work,dept,company,companyPhone?("T. "+companyPhone):"",phone?("M. "+phone):"",fax?("F. "+fax):"",email,homepage].filter(Boolean);
-for(const line of leftLines){const used=wrapText(ctx,line,left+Math.round(10*scale),y,leftWidth,lineHeight,2); y+=Math.max(1,used)*lineHeight+Math.round(2*scale); if(y>h-Math.round(8*scale))break;}
-ctx.fillStyle="#fff2d0"; ctx.font="bold "+rightSize+"px Malgun Gothic, Arial, sans-serif"; let ry=top+Math.round(26*scale); FIXED_LINES.forEach(line=>{ctx.fillText(line,rightX+Math.round(10*scale),ry); ry+=rightLineGap;});
-updateFromCanvas();}
-async function copyImage(){try{if(!latestDataUrl)updateFromCanvas(); const blob=dataURLToBlob(latestDataUrl); if(navigator.clipboard&&window.ClipboardItem){await navigator.clipboard.write([new ClipboardItem({"image/png":blob})]); alert("이미지가 복사되었습니다."); return;} const ok=copyRichImageFallback(); if(ok){alert("이미지가 복사되었습니다."); return;} throw new Error("copy_failed");} catch(e){const ok=copyRichImageFallback(); if(ok){alert("이미지가 복사되었습니다."); return;} alert("이미지 복사에 실패했습니다. PNG 저장 또는 이미지 새 탭 열기를 사용하세요.");}}
-if (bgImg.complete) { renderSignature(); } else { bgImg.onload=renderSignature; }
-</script></body></html>
+const FIXED_LINES = ["상한폐지 실현하자","투명하게 바꾸자","제도화 하자"];
+
+function $(id){ return document.getElementById(id); }
+
+function normalizeText(text){
+  return (text || "").replace(/\r/g,"").replace(/\u00A0/g," ").replace(/[ \t]+/g," ");
+}
+
+function normalizeLines(text){
+  return normalizeText(text)
+    .replace(/M\.\s*(\+?82[0-9.\- ]+)/g,"\nM. $1\n")
+    .replace(/F\.\s*(\+?82[0-9.\- ]+)/g,"\nF. $1\n")
+    .split(/\n+/).map(v=>v.trim()).filter(Boolean);
+}
+
+function wrapText(ctx,text,x,y,maxWidth,lineHeight,maxLines){
+  if(!text) return 0;
+  const words = text.split(/\s+/);
+  let line = "";
+  const lines = [];
+  for(let i=0;i<words.length;i++){
+    const testLine = line ? line + " " + words[i] : words[i];
+    if(ctx.measureText(testLine).width > maxWidth && line){
+      lines.push(line);
+      line = words[i];
+      if(maxLines && lines.length >= maxLines) break;
+    } else {
+      line = testLine;
+    }
+  }
+  if(line && (!maxLines || lines.length < maxLines)) lines.push(line);
+  lines.forEach((ln,idx)=>ctx.fillText(ln,x,y+idx*lineHeight));
+  return lines.length;
+}
+
+function cleanValue(v){
+  return (v || "").trim().replace(/^[:：]\s*/,"");
+}
+
+function getFieldBlock(raw,label){
+  const lines = raw.split(/\n/);
+  let start = -1;
+  for(let i=0;i<lines.length;i++){
+    if(lines[i].includes(label)){ start = i; break; }
+  }
+  if(start === -1) return "";
+  const collected = [];
+  for(let i=start;i<lines.length;i++){
+    const line = lines[i].trim();
+    if(i===start){
+      const after = line.replace(new RegExp("^.*?" + label + "\\s*[:：]?\\s*"),"").trim();
+      if(after) collected.push(after);
+      continue;
+    }
+    if(!line) break;
+    if(/^(회사주소|세부위치|연락처|이메일|회사전화 ?1|회사전화|휴대폰 ?1|휴대폰|인터넷전화|팩스|회사홈페이지|비밀번호 찾기 인증 연락처|외부메일|공유정보|담당업무|선호언어|영문정보|이름|중간이름|성|표현이름|회사|부서|직급명)$/i.test(line)) break;
+    collected.push(line);
+  }
+  return cleanValue(collected.join(" "));
+}
+
+function findLabeledValue(raw,label){
+  const block = getFieldBlock(raw,label);
+  if(block) return block;
+  const re = new RegExp(label + "\\s*[:：]?\\s*(.+)","i");
+  const m = raw.match(re);
+  return m ? cleanValue(m[1].split("\n")[0]) : "";
+}
+
+function extractFirstPhone(raw,labels){
+  for(const label of labels){
+    const value = findLabeledValue(raw,label);
+    if(value) return value;
+  }
+  return "";
+}
+
+function normalizePhone(v){
+  let s = (v || "").trim();
+  if(!s) return "";
+  s = s.replace(/\s+/g,"").replace(/-/g,".").replace(/\.\./g,".");
+  return s;
+}
+
+function extractWorkFromSignature(lines){
+  const filtered = lines.filter(v => !/노동조합|노조|지부|위원장|국장/.test(v));
+  const explicit = filtered.find(v => /【.*】/.test(v) || /\[Tech\]|\[Task\]|HPC|Public Cloud|인프라 설계|설계 및 운영|운영\(/i.test(v));
+  if(explicit) return explicit.replace(/,$/,"").trim();
+  return "";
+}
+
+function extractFields(){
+  const raw = $("sourceText").value || "";
+  const text = normalizeText(raw);
+  const lines = normalizeLines(raw);
+
+  const email = findLabeledValue(text,"이메일") || (text.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i)||[])[0] || "";
+  const companyPhone = extractFirstPhone(text,["회사전화 1","회사전화","인터넷전화"]);
+  const fax = findLabeledValue(text,"팩스");
+  const homepage = findLabeledValue(text,"회사홈페이지");
+  const work = getFieldBlock(raw,"담당업무") || extractWorkFromSignature(lines);
+  const dept = findLabeledValue(text,"부서") || lines.find(v => /그룹|센터|본부|팀|실\)|실$|파트|담당/i.test(v) && !/노동조합|노조|지부|위원장|국장/.test(v)) || "";
+  const position = findLabeledValue(text,"직급명") || findLabeledValue(text,"직책") || "";
+  const company = findLabeledValue(text,"회사") || lines.find(v => /^삼성전자$|Samsung Electronics|삼성전자협력사|전자파트너/i.test(v)) || "";
+  const name = lines.find(v => /^[가-힣]{2,5}$/.test(v)) || findLabeledValue(text,"이름") || "";
+
+  let mobile = extractFirstPhone(text,["휴대폰 1","휴대폰"]);
+  if(!mobile){
+    const phoneMatches = text.match(/(\+?82[.\- ]?)?0?1[016789][0-9.\- ]{7,}/g) || [];
+    if(phoneMatches.length) mobile = phoneMatches[0];
+  }
+
+  $("name").value = cleanValue(name);
+  $("phone").value = normalizePhone(mobile);
+  $("work").value = cleanValue(work);
+  $("dept").value = cleanValue(dept);
+  $("position").value = cleanValue(position);
+  $("companyPhone").value = normalizePhone(companyPhone);
+  $("fax").value = normalizePhone(fax);
+  $("email").value = cleanValue(email);
+  $("homepage").value = cleanValue(homepage || "www.samsung.com");
+  $("company").value = cleanValue(company);
+
+  renderSignature();
+}
+
+let latestDataUrl = "";
+
+function updateDownloadLink(){
+  const link = $("downloadBtn");
+  const fileName = "signature_" + (($("name").value || "user").replace(/[^a-zA-Z0-9_-]/g,"_") || "user") + ".png";
+  link.href = latestDataUrl;
+  link.download = fileName;
+}
+
+function dataURLToBlob(dataURL){
+  const parts = dataURL.split(",");
+  const mime = parts[0].match(/:(.*?);/)[1];
+  const binary = atob(parts[1]);
+  const len = binary.length;
+  const bytes = new Uint8Array(len);
+  for(let i=0;i<len;i++) bytes[i] = binary.charCodeAt(i);
+  return new Blob([bytes], {type:mime});
+}
+
+function updateFromCanvas(){
+  const canvas = $("sigCanvas");
+  latestDataUrl = canvas.toDataURL("image/png");
+  updateDownloadLink();
+}
+
+function renderSignature(){
+  const canvas = $("sigCanvas");
+  const ctx = canvas.getContext("2d");
+  const w = parseInt($("widthInput").value || 400, 10);
+  const h = parseInt($("heightInput").value || 140, 10);
+  canvas.width = w;
+  canvas.height = h;
+
+  const nameSize = 18;
+  const labelSize = 10;
+  const rightSize = 15;
+  const lineHeight = 13;
+  const rightLineGap = 30;
+  const left = 12;
+  const top = 10;
+  const rightX = Math.round(w * 0.52);
+  const leftWidth = Math.max(140, Math.round(w * 0.40));
+
+  const name = $("name").value.trim();
+  const phone = $("phone").value.trim();
+  const work = $("work").value.trim();
+  const dept = $("dept").value.trim();
+  const position = $("position").value.trim();
+  const companyPhone = $("companyPhone").value.trim();
+  const fax = $("fax").value.trim();
+  const company = $("company").value.trim();
+  const email = $("email").value.trim();
+  const homepage = $("homepage").value.trim();
+
+  ctx.clearRect(0,0,w,h);
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0,0,w,h);
+
+  ctx.fillStyle = "#ffb64f";
+  ctx.fillRect(left, top, 4, h - 20);
+
+  ctx.fillStyle = "#ffffff";
+  ctx.font = "bold " + nameSize + "px Malgun Gothic, Arial, sans-serif";
+  ctx.fillText(name || "", left + 10, top + nameSize);
+
+  let y = top + nameSize + 16;
+  if(position){
+    ctx.fillStyle = "#ffd59d";
+    ctx.font = "bold 10px Malgun Gothic, Arial, sans-serif";
+    ctx.fillText(position, left + 10, y);
+    y += 14;
+  }
+
+  ctx.fillStyle = "#f0f0f0";
+  ctx.font = labelSize + "px Malgun Gothic, Arial, sans-serif";
+  const leftLines = [
+    work,
+    dept,
+    company,
+    companyPhone ? ("T. " + companyPhone) : "",
+    phone ? ("M. " + phone) : "",
+    fax ? ("F. " + fax) : "",
+    email,
+    homepage
+  ].filter(Boolean);
+
+  for(const line of leftLines){
+    const used = wrapText(ctx, line, left + 10, y, leftWidth, lineHeight, 2);
+    y += Math.max(1, used) * lineHeight + 2;
+    if(y > h - 8) break;
+  }
+
+  ctx.fillStyle = "#fff2d0";
+  ctx.font = "bold " + rightSize + "px Malgun Gothic, Arial, sans-serif";
+  let ry = top + 26;
+  FIXED_LINES.forEach(line => {
+    ctx.fillText(line, rightX + 10, ry);
+    ry += rightLineGap;
+  });
+
+  updateFromCanvas();
+}
+
+function copyRichImageFallback(){
+  const box = document.createElement("div");
+  box.contentEditable = "true";
+  box.style.position = "fixed";
+  box.style.left = "-9999px";
+  box.style.top = "0";
+  box.innerHTML = '<img src="' + latestDataUrl + '" alt="signature" />';
+  document.body.appendChild(box);
+  const range = document.createRange();
+  range.selectNodeContents(box);
+  const sel = window.getSelection();
+  sel.removeAllRanges();
+  sel.addRange(range);
+  box.focus();
+  let ok = false;
+  try{ ok = document.execCommand("copy"); } catch(e){ ok = false; }
+  sel.removeAllRanges();
+  document.body.removeChild(box);
+  return ok;
+}
+
+async function copyImage(){
+  try{
+    if(!latestDataUrl) updateFromCanvas();
+    const blob = dataURLToBlob(latestDataUrl);
+    if(navigator.clipboard && window.ClipboardItem){
+      await navigator.clipboard.write([new ClipboardItem({"image/png": blob})]);
+      alert("이미지가 복사되었습니다.");
+      return;
+    }
+    const ok = copyRichImageFallback();
+    if(ok){
+      alert("이미지가 복사되었습니다.");
+      return;
+    }
+    throw new Error("copy_failed");
+  } catch(e){
+    const ok = copyRichImageFallback();
+    if(ok){
+      alert("이미지가 복사되었습니다.");
+      return;
+    }
+    alert("이미지 복사에 실패했습니다. PNG 저장 또는 이미지 새 탭 열기를 사용하세요.");
+  }
+}
+
+function openImageInNewTab(){
+  if(!latestDataUrl) updateFromCanvas();
+  const w = window.open();
+  if(!w){
+    alert("새 탭 열기가 차단되었습니다. 브라우저 팝업 차단을 확인하세요.");
+    return;
+  }
+  w.document.write('<title>Signature PNG</title><img src="' + latestDataUrl + '" style="max-width:100%;height:auto;display:block;margin:0 auto;background:#111;">');
+  w.document.close();
+}
+
+window.addEventListener("DOMContentLoaded", renderSignature);
+</script>
+</body>
+</html>
