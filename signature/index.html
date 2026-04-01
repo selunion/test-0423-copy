@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -78,7 +79,7 @@ canvas{max-width:100%;height:auto;border-radius:8px;background:#000;box-shadow:0
       <button type="button" onclick="renderSignature()">미리보기 갱신</button>
       <a id="downloadBtn" class="btn-link secondary" href="#" download="signature_user.png">PNG 저장</a>
       <button type="button" class="dark" onclick="copyImage()">이미지 복사</button>
-      <div class="muted">글자 크기는 고정입니다. 긴 이름/업무가 겹치지 않도록 줄 간격을 보정했습니다. /signature/ 만 먼저 올려 테스트한 뒤 메인 index.html을 바꾸세요.</div>
+      <div class="muted">이 버전은 이름 아래 본문 첫 줄 겹침을 보정한 버전입니다. /signature/ 만 먼저 올려 테스트한 뒤 메인 index.html을 바꾸세요.</div>
     </div>
   </div>
 
@@ -94,6 +95,8 @@ canvas{max-width:100%;height:auto;border-radius:8px;background:#000;box-shadow:0
 
 <script>
 const FIXED_LINES = ["상한폐지 실현하자","투명하게 바꾸자","제도화 하자"];
+const bgImg = new Image();
+bgImg.src = "./assets/background.png";
 
 function $(id){ return document.getElementById(id); }
 
@@ -255,7 +258,7 @@ function renderSignature(){
   const nameSize = 18;
   const labelSize = 10;
   const rightSize = 15;
-  const lineHeight = 13;
+  const lineHeight = 14;
   const rightLineGap = 30;
   const left = 12;
   const top = 10;
@@ -274,8 +277,12 @@ function renderSignature(){
   const homepage = $("homepage").value.trim();
 
   ctx.clearRect(0,0,w,h);
-  ctx.fillStyle = "#000000";
-  ctx.fillRect(0,0,w,h);
+  if (bgImg.complete && bgImg.naturalWidth > 0) {
+    ctx.drawImage(bgImg, 0, 0, w, h);
+  } else {
+    ctx.fillStyle = "#000000";
+    ctx.fillRect(0,0,w,h);
+  }
 
   ctx.fillStyle = "#ffb64f";
   ctx.fillRect(left, top, 4, h - 20);
@@ -284,12 +291,12 @@ function renderSignature(){
   ctx.font = "bold " + nameSize + "px Malgun Gothic, Arial, sans-serif";
   ctx.fillText(name || "", left + 10, top + nameSize);
 
-  let y = top + nameSize + 16;
+  let y = top + nameSize + 20;
   if(position){
     ctx.fillStyle = "#ffd59d";
     ctx.font = "bold 10px Malgun Gothic, Arial, sans-serif";
     ctx.fillText(position, left + 10, y);
-    y += 14;
+    y += 16;
   }
 
   ctx.fillStyle = "#f0f0f0";
@@ -379,7 +386,10 @@ function openImageInNewTab(){
   w.document.close();
 }
 
-window.addEventListener("DOMContentLoaded", renderSignature);
+window.addEventListener("DOMContentLoaded", () => {
+  renderSignature();
+  if (!bgImg.complete) bgImg.onload = renderSignature;
+});
 </script>
 </body>
 </html>
