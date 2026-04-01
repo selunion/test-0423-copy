@@ -277,12 +277,29 @@ function renderSignature(){
   const homepage = $("homepage").value.trim();
 
   ctx.clearRect(0,0,w,h);
-  if (bgImg.complete && bgImg.naturalWidth > 0) {
-    ctx.drawImage(bgImg, 0, 0, w, h);
+if (bgImg.complete && bgImg.naturalWidth > 0) {
+  const imgRatio = bgImg.width / bgImg.height;
+  const canvasRatio = w / h;
+
+  let drawWidth, drawHeight, offsetX, offsetY;
+
+  if (imgRatio > canvasRatio) {
+    drawHeight = h;
+    drawWidth = h * imgRatio;
+    offsetX = (w - drawWidth) / 2;
+    offsetY = 0;
   } else {
-    ctx.fillStyle = "#000000";
-    ctx.fillRect(0,0,w,h);
+    drawWidth = w;
+    drawHeight = w / imgRatio;
+    offsetX = 0;
+    offsetY = (h - drawHeight) / 2;
   }
+
+  ctx.drawImage(bgImg, offsetX, offsetY, drawWidth, drawHeight);
+} else {
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0,0,w,h);
+}
 
   ctx.fillStyle = "#ffb64f";
   ctx.fillRect(left, top, 4, h - 20);
@@ -391,5 +408,6 @@ window.addEventListener("DOMContentLoaded", () => {
   if (!bgImg.complete) bgImg.onload = renderSignature;
 });
 </script>
+<script defer src="https://static.cloudflareinsights.com/beacon.min.js/v8c78df7c7c0f484497ecbca7046644da1771523124516" integrity="sha512-8DS7rgIrAmghBFwoOTujcf6D9rXvH8xm8JQ1Ja01h9QX8EzXldiszufYa4IFfKdLUKTTrnSFXLDkUEOTrZQ8Qg==" data-cf-beacon='{"version":"2024.11.0","token":"504f0a5f1ecf41ca9f7b943f054fbbed","r":1,"server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
